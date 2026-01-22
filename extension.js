@@ -754,13 +754,13 @@ async function incrementSessionCount(context) {
 function startStatsCollection(context) {
     if (statsCollectionTimer) clearInterval(statsCollectionTimer);
 
-    // Collect stats every 30 seconds and check for away actions
+    // Collect stats every 5 seconds and check for away actions
     statsCollectionTimer = setInterval(() => {
         if (isEnabled) {
             collectAndSaveStats(context);
             checkForAwayActions(context); // Check if user returned from away
         }
-    }, 30000);
+    }, 5000);
 
     log('ROI Stats: Collection started (every 30s)');
 }

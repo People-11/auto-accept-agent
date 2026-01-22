@@ -169,9 +169,41 @@ class CDPHandler {
     }
 
     getConnectionCount() { return this.connections.size; }
-    async getAwayActions() { return 0; } // Placeholder
-    async resetStats() { return { clicks: 0, blocked: 0 }; } // Placeholder
-    async hideBackgroundOverlay() { } // Placeholder
+    async getAwayActions() {
+        let total = 0;
+        for (const [id] of this.connections) {
+            try {
+                const res = await this._evaluate(id, 'window.__autoAcceptGetAwayActions ? window.__autoAcceptGetAwayActions() : 0');
+                if (res?.result?.value !== undefined) {
+                    total += parseInt(res.result.value) || 0;
+                }
+            } catch (e) { }
+        }
+        return total;
+    }
+
+    async resetStats() {
+        const stats = { clicks: 0, blocked: 0 };
+        for (const [id] of this.connections) {
+            try {
+                const res = await this._evaluate(id, 'JSON.stringify(window.__autoAcceptResetStats ? window.__autoAcceptResetStats() : {})');
+                if (res?.result?.value) {
+                    const s = JSON.parse(res.result.value);
+                    stats.clicks += s.clicks || 0;
+                    stats.blocked += s.blocked || 0;
+                }
+            } catch (e) { }
+        }
+        return stats;
+    }
+
+    async hideBackgroundOverlay() {
+        for (const [id] of this.connections) {
+            try {
+                await this._evaluate(id, 'if(window.hideOverlay) window.hideOverlay()');
+            } catch (e) { }
+        }
+    }
 }
 
 module.exports = { CDPHandler };
