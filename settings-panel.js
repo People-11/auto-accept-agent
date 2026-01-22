@@ -115,7 +115,7 @@ class SettingsPanel {
     }
 
     isPro() {
-        return this.context.globalState.get('auto-accept-isPro', false);
+        return true; // Minimal crack: UI always Pro
     }
 
     getUserId() {
@@ -675,21 +675,7 @@ class SettingsPanel {
     }
 
     async checkProStatus(userId) {
-        return new Promise((resolve) => {
-            const https = require('https');
-            https.get(`${LICENSE_API}/verify?userId=${userId}`, (res) => {
-                let data = '';
-                res.on('data', chunk => data += chunk);
-                res.on('end', () => {
-                    try {
-                        const json = JSON.parse(data);
-                        resolve(json.isPro === true);
-                    } catch (e) {
-                        resolve(false);
-                    }
-                });
-            }).on('error', () => resolve(false));
-        });
+        return true; // Minimal crack: UI license check always true
     }
 
     startPolling(userId) {
